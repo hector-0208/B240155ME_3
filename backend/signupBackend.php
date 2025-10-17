@@ -9,27 +9,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password_plain = $_POST['password'] ?? null;
     $password = password_hash($password_plain, PASSWORD_DEFAULT);
 
-    if($email && $password && $name) {
-        $checkStmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        $checkStmt->bind_param("s", $email);
-        $checkStmt->execute();
-        $result = $checkStmt->get_result();
-
-        if ($result->num_rows > 0) {
-            echo "<script>alert('User with this email already exists. Please use another email or log in.'); window.location.href='../frontend/signup.php';</script>";
-        } else {
-            $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $name, $email, $password);
-
-            if ($stmt->execute()) {
-                echo "<script>alert('Signup successful! Please log in.'); window.location.href='../frontend/login.php';</script>";
-            } else {
-                echo "<script>alert('Error: " . $stmt->error . "'); window.location.href='../frontend/signup.php';</script>";
-            }
-            $stmt->close();
-        }
-        $checkStmt->close();
+    if (empty($name) || empty($email) || empty($password)) {
+        header("Location: ../frontend/signup.php?error=emptyfields");
+        exit();
     }
+    $checkStmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $checkStmt->bind_param("s", $email);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $checkStmt->close();
+        $conn->close();
+        header("Location: ../frontend/signup.php?error=userexists");
+        exit();
+    } else {
+        $checkStmt->close(); // Can close this now, we're done with it.
+        
+        $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $name, $email, $hashedPassword);
+
+        if ($stmt->execute()) {
+            // Signup successful, redirect to login with a success message
+            $stmt->close();
+            $conn->close();
+            header("Location: ../frontend/login.php?signup=success");
+            exit();
+        } else {
+            // Database insertion error
+            $stmt->close();
+            $conn->close();
+            header("Location: ../frontend/signup.php?error=sqlerror");
+            exit();
+        }
+    }
+} else {
+    // If not a POST request, redirect away
+    header('Location: ../frontend/signup.php');
+    exit();
 }
-$conn->close();
-?>

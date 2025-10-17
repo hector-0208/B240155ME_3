@@ -39,7 +39,7 @@
             <input
               type="password"
               id="loginPassword"
-              name="loginPassword"
+              name="password"
               placeholder="Enter your password"
               required
             />

@@ -6,6 +6,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email'] ?? '');
     $pass = trim($_POST['password'] ?? '');
 
+    if (empty($email) || empty($pass)) {
+        header('Location: ../frontend/login.php?error=emptyfields');
+        exit();
+    }
+
     if (!empty($email) && !empty($pass)) {
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param('s', $email);
@@ -18,16 +23,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['id'] = $user['id'];
                 $_SESSION['name'] = $user['name'];
                 $_SESSION['email'] = $user['email'];
+                $stmt->close();
+                $conn->close();
                 header("Location: ../frontend/main.php");
                 exit();
             } else {
-                $error = "Invalid password.";
+                $stmt->close();
+                $conn->close();
+                header('Location: ../frontend/login.php?error=invalidpassword');
+                exit();
             }
         } else {
-            $error = "Invalid email";
+            $stmt->close();
+            $conn->close();
+            header('Location: ../frontend/login.php?error=nouser');
+            exit();
         }
-        // If login fails for any reason, redirect back with a generic error
-        echo "<script>alert('$error'); window.location.href='../frontend/login.php';</script>";
+    } else {
+        header('Location: ../frontend/login.php');
+        exit();
     }
 }
 ?>
