@@ -1,3 +1,20 @@
+<?php
+include '../backend/users.php';
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$bookings = [];
+$stmt = $conn->prepare("SELECT * FROM bookings WHERE email = ?");
+$stmt->bind_param("s", $_SESSION['email']);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $bookings[] = $row;
+}
+$stmt->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,7 +55,23 @@
                     </tr>
                 </thead>
                 <tbody id="bookingsTableBody">
-                    
+                    <?php if (empty($bookings)): ?>
+                        <tr>
+                            <td colspan="6" style="text-align: center;">You have no bookings yet.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($bookings as $booking): ?>
+                            <tr>
+                                <td>BT-00<?php echo htmlspecialchars($booking['id']); ?></td>
+                                <td><?php echo htmlspecialchars($booking['passenger']); ?></td>
+                                <td><?php echo htmlspecialchars($booking['source']); ?> →
+                                    <?php echo htmlspecialchars($booking['dest']); ?></td>
+                                <td><?php echo htmlspecialchars($booking['doj']); ?></td>
+                                <td><?php echo htmlspecialchars($booking['seat']); ?></td>
+                                <td>₹<?php echo number_format($booking['fare'], 2); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>

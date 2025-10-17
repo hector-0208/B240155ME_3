@@ -22,7 +22,7 @@
       <h1 class="page-title">Book Your Bus Ticket</h1>
 
       <div class="form-container">
-        <form id="bookingForm">
+        <form id="bookingForm" action="../backend/searchBackend.php" method="POST">
           <div class="form-group">
             <label for="passengerName">Name:</label>
             <input

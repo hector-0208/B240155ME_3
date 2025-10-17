@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $seatNum = (int) preg_replace('/[^0-9]/', '', $seat);
         
         $price = ($seatNum % 3 == 0) ? 350 : 300;
-        $fare = $price - ($price * $discount);
+        $fare = $price - $price * $discount;
 
         $stmt = $conn->prepare("INSERT INTO bookings (passenger, source, dest, doj, seat, fare, email) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param('sssssds', $pax, $_SESSION['source'], $_SESSION['dest'], $datetime, $seat, $fare, $_SESSION['email']);
