@@ -13,7 +13,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home - BusTravel</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/B240155ME_3/frontend/styles.css" />
   </head>
   <body>
     <nav class="navbar">

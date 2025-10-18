@@ -1,0 +1,3 @@
+- Implemented a site which serves as a clicable bus layout for seat selection during the booking process(No feature for displaying pre booked seats yet however)
+- Created a bookings page for the user to be able to see the bookings that they have made
+- Implemented the 15% discount feature for first bookings as mentioned in the docs
