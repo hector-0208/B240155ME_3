@@ -24,19 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: ../frontend/signup.php?error=userexists");
         exit();
     } else {
-        $checkStmt->close(); // Can close this now, we're done with it.
-        
+        $checkStmt->close();
         $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $name, $email, $hashedPassword);
 
         if ($stmt->execute()) {
-            // Signup successful, redirect to login with a success message
             $stmt->close();
             $conn->close();
             header("Location: ../frontend/login.php?signup=success");
             exit();
         } else {
-            // Database insertion error
             $stmt->close();
             $conn->close();
             header("Location: ../frontend/signup.php?error=sqlerror");
@@ -44,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 } else {
-    // If not a POST request, redirect away
     header('Location: ../frontend/signup.php');
     exit();
 }
